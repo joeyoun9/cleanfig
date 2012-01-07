@@ -1,14 +1,3 @@
-ceil2ff
+cleanfig
 
-A python package for converting any *known* ceilometer raw data formats into SI
-(m^-1 sr^-1) backscatter coefficient variables in a gridded flat file, 
-with Unix timestamps. These files should be much easier to read by subsequent
-processors. No averaging is to be computed.
-
-At version 1.0, this is not built for speed, but for power, and accuracy. Ideally
-this code need only be run once on a dataset. It also does not have many decision
-making abilities, and generally runs over an entire folder's contents.
-
-This is an expansion off the basic code derived from initial development of the 
-UUAdip data manager by Joe Young at the University of Utah. Eventually, UUAdip 
-will utilize this package in its processing.
+a collection of functions which hopefully simplify the creation of some nice matplotlib figures. Not exactly a profoundly useful project, but applications exist in several areas. 
