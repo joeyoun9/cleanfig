@@ -3,7 +3,7 @@ import matplotlib.dates as md
 import matplotlib.ticker as tk
 import mpl_toolkits.axisartist as AA
 from mpl_toolkits.axes_grid1 import host_subplot
-from matplotlib import rc
+from matplotlib import rc,rcParams
 #from pylab import *
 import math
 from datetime import tzinfo,timedelta,date,datetime
@@ -19,7 +19,7 @@ def figure():
 
 def init_axis(rows,cols,i,twin=False):
 	# this creates axes with the axes artist loaded
-	ax = host_subplot(rows,cols,i,axes_class=AA.Axes)
+	ax = host_subplot(rows,cols,i)#,axes_class=AA.Axes)
 	if twin:
 		# the twin axis will create a second X and Y axis on the top and the left!
 		return ax,ax.twin()
@@ -55,8 +55,8 @@ sub_major_scale = {
 	0.5    : 0,
 	1.0     : (1./3.),
 	2.0     :  1,
-	4.0     :  3,
-        11.0    :  3,
+	6.0     :  3,
+        11.0    :  6,
         24.0    :  6,
 	48	:  12,
 	118	:  24
@@ -130,9 +130,18 @@ def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_sca
 		dt = datetime.fromtimestamp(time,tz=tzone)
 		if (dt.hour == 0 or dt.hour == 12) and days and time != begin and time != end:
 			# don't plot the date at the beginning or end, it looks tacky...
-			label = dt.strftime(r'%H:%M\\%d %b %Y')
+			# DETERMINE IF LaTeX is active/available, if not, then do a longer string
+			if rcParams['text.usetex']:
+				label = dt.strftime(r'%H:%M%\\%d %b %Y')
+			elif major_ticks >=24:
+				label = dt.strftime(r'%d %b')
+			else:
+				label= dt.strftime(r'%H:%M') # for now...
 		else:
-			label = dt.strftime(r'%H:%M')
+			if major_ticks >= 24:
+				label = dt.strftime(r'%d %b')
+			else:
+				label = dt.strftime(r'%H:%M')
 		labels.append(label)
 		# now to add the sub-major ticks! These for now are automatic based on the current major ticks
 		if smj_ticks > 0.:
