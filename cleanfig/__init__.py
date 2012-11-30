@@ -63,14 +63,14 @@ sub_major_scale = {
    
 }
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
-def ttUTC(ax,xy,begin,end,ms=major_scale,mns=minor_scale):
-	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns)
+def ttUTC(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=True):
+	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns,smt=smt)
 
-def ttMST(ax,xy,begin,end,ms=major_scale,mns=minor_scale):
-	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns)
+def ttMST(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=True):
+	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns,smt=smt)
 
 
-def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_scale=minor_scale):
+def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_scale=minor_scale,smt=True):
 	"""
 		
 	"""
@@ -92,10 +92,12 @@ def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_sca
 	# find sub-major ticks wich are major ticks, but without any labels.
 	global sub_major_scale
 	keys = sub_major_scale.keys()
-	keys.sort()
-	for key in keys:
-		if key < major_ticks:
-			smj_ticks = sub_major_scale[key]
+	if smt:
+		'only plot sub-major ticks if desired. long plots they look horrible on'
+		keys.sort()
+		for key in keys:
+			if key < major_ticks:
+				smj_ticks = sub_major_scale[key]
 	# now do the same for minor ticks
 	for key in minor_scale.keys():
 		if key < duration:
