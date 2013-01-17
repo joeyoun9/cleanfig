@@ -34,45 +34,46 @@ def init_axis_gs (plt,gs,twin=False,sharex=False):
 		return ax,ax.twin()
 	else:
 		return ax
+
 # a new way to deal with times, simply use epoch times, and figure it out from there
 major_scale = {
-	0      : .5,
-        6      : 1,
-	12     : 3,
-	48     : 12,
-	300	: 24,
+	0      	: .5,
+    6      	: 1,
+	12   	: 3,
+	48     	: 12,
+	300		: 24,
 	525     : 48
 	}
 # FIXME - at greater than 525 hours, there is no guarantee of encountering 12/0UTC
 minor_scale = {
-	0     : (1./60.),
-	3     : .5,
-	12     : 1,
-	72     : 3
+	0     	: (1./60.),
+	3     	: .5,
+	12     	: 1,
+	72     	: 3
 	}
 sub_major_scale = {
-	0.     : 0,
-	0.5    : 0,
-	1.0     : (1./3.),
-	2.0     :  1,
-	6.0     :  3,
-        11.0    :  6,
-        24.0    :  6,
-	48	:  12,
-	118	:  24
+	0.     	: 0,
+	0.5    	: 0,
+	1.0    	: (1./3.),
+	2.0    	:  1,
+	6.0    	:  3,
+	11.0   	:  6,
+    24.0   	:  6,
+	48		:  12,
+	118		:  24
    
 }
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
-def ttUTC(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=True):
-	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns,smt=smt)
+def ttUTC(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=False,**kwargs):
+	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns,smt=smt,kwargs)
 
-def ttMST(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=True):
-	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns,smt=smt)
+def ttMST(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=False,**kwargs):
+	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns,smt=smt,kwargs)
 
 
-def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_scale=minor_scale,smt=True):
+def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_scale=minor_scale,smt=True,**kwargs):
 	"""
-		
+		 
 	"""
 	# determine the epoch values of time ticks in UTC, and then their lables
 	# remember to label the date if a new day! #FIXME - only accepts hours

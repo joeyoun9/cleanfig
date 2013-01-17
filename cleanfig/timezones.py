@@ -35,6 +35,17 @@ class mstTZ(tzinfo):
 	def dst(self, dt):
 		return timedelta(0) # i care not for DST
 
+class pstTZ(tzinfo):
+	# expand the tzinfo class to make a MST timezone object
+	def __init__(self):
+		pass
+	def tzname(self, dt):
+		return "MST"
+	def utcoffset(self,dt):
+		return timedelta(hours=-8)
+	def dst(self, dt):
+		return timedelta(0) # i care not for DST
+
 class utcTZ(tzinfo):
 	# also expland tzonfo to create a UTC timezone object
 	def __init__(self):
