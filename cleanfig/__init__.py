@@ -124,8 +124,9 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 			time_minor += 3600.
 	'''
 	
-	
+	'MAKE SURE TIME MINOR AND TIME BEGIN AT THE SAME TIME'
 	time = begin
+	time_minor = begin
 	# now time is the epoch time of the starting hour, 
 	# use the duration to determine how far between major/minor ticks should be
 	# define the epochs and labels lists using the major_ticks as the spacing
