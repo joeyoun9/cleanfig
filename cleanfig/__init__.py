@@ -98,12 +98,12 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 	'sub-major ticks will plot 3 per major tick'
 	if smt:
 		'only plot sub-major ticks if desired. long plots they look horrible on'
-		smj_tics = major_ticks/2.
+		smj_ticks = major_ticks/2.
 	# now do the same for minor ticks
 	if minor_scale:
 		minor_ticks = minor_scale
 	else:
-		monor_ticks = major_ticks/10
+		minor_ticks = major_ticks/10
 
 	'''
 	# begin is epoch time value, find the next occuring 0, 3, 6, 9, 12, 15, 18 or 21 hour
