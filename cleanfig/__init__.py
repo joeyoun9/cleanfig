@@ -64,11 +64,11 @@ sub_major_scale = {
    
 }
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
-def ttUTC(begin,end,ms=major_scale,mns=minor_scale,smt=False,ax=plt.gca(),xy='x',**kwargs):
-	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns,smt=smt,**kwargs)
+def ttUTC(begin,end,major=False,minor=False,smt=False,ax=plt.gca(),xy='x',**kwargs):
+	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,scale=major,minor_scale=minor,smt=smt,**kwargs)
 
-def ttMST(begin,end,ms=major_scale,mns=minor_scale,smt=False,ax=plt.gca(),xy='x',**kwargs):
-	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns,smt=smt,**kwargs)
+def ttMST(begin,end,major=False,minor=False,smt=False,ax=plt.gca(),xy='x',**kwargs):
+	timeticks(ax,xy,tz.mstTZ(),begin,end,scale=major,minor_scale=minor,smt=smt,**kwargs)
 
 
 def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt=True,**kwargs):
@@ -99,7 +99,9 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 	if smt:
 		'only plot sub-major ticks if desired. long plots they look horrible on'
 		smj_ticks = major_ticks/2.
-	# now do the same for minor ticks
+
+
+	'Determine minor ticks'
 	if minor_scale:
 		minor_ticks = minor_scale
 	else:
