@@ -71,7 +71,7 @@ def ttMST(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=False,**kwargs):
 	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns,smt=smt,kwargs)
 
 
-def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_scale=minor_scale,smt=True,**kwargs):
+def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt=True,**kwargs):
 	"""
 		 
 	"""
@@ -82,36 +82,39 @@ def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_sca
 	minis = []
 	# start by calculating the ticks, ie, how far apart each one is!
 	duration = (end - begin) / 3600. # duration in hours
-	scale = major_scale
 	# now find the value that is greater than duration, but less than the next one
 	major_ticks = False
 	minor_ticks = False
 	smj_ticks = False
-	for key in scale.keys():
-		if key < duration:
-			major_ticks = scale[key]
-	# find sub-major ticks wich are major ticks, but without any labels.
-	global sub_major_scale
-	keys = sub_major_scale.keys()
+	'Define major tick length'
+	if scale:
+		if type(scale) == dict:
+				print 'I no longer work with major/minor tick dicts!!'
+				return False
+		major_ticks = scale
+	else:
+		major_ticks = (end-begin)/4. # width in seconds
+		
+	'sub-major ticks will plot 3 per major tick'
 	if smt:
 		'only plot sub-major ticks if desired. long plots they look horrible on'
-		keys.sort()
-		for key in keys:
-			if key < major_ticks:
-				smj_ticks = sub_major_scale[key]
+		smj_tics = major_ticks/2.
 	# now do the same for minor ticks
-	for key in minor_scale.keys():
-		if key < duration:
-			minor_ticks = minor_scale[key]
+	if minor_scale:
+		minor_ticks = minor_scale
+	else:
+		monor_ticks = major_ticks/10
 
+	'''
 	# begin is epoch time value, find the next occuring 0, 3, 6, 9, 12, 15, 18 or 21 hour
 	time = begin
-	if major_ticks >= 0.5:
+	if major_ticks >= 3600:
+		'If we are looking at more than half an hour, find the next hour to start on'
 		bhr = datetime.fromtimestamp(begin,tz=tzone).hour
 		while bhr % major_ticks != 0:
 			bhr += 1.
 			time += 3600.
-
+		
 	# repeat for minor axis ticks
 	time_minor = begin
 	if minor_ticks > 0.5:
@@ -119,7 +122,10 @@ def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_sca
 		while bhr % minor_ticks != 0:
 			bhr += 1.
 			time_minor += 3600.
-
+	'''
+	
+	
+	time = begin
 	# now time is the epoch time of the starting hour, 
 	# use the duration to determine how far between major/minor ticks should be
 	# define the epochs and labels lists using the major_ticks as the spacing
@@ -135,30 +141,31 @@ def timeticks(ax,xy,tzone,begin,end,days=False,major_scale=major_scale,minor_sca
 			# don't plot the date at the beginning or end, it looks tacky...
 			# DETERMINE IF LaTeX is active/available, if not, then do a longer string
 			if rcParams['text.usetex']:
-				label = dt.strftime(r'%H:%M%\\%d %b %Y')
-			elif major_ticks >=24:
+				label = dt.strftime(r'$%H:%M%\\%d %b %Y$')
+			elif major_ticks >=86400:
 				label = dt.strftime(r'%d %b')
 			else:
 				label= dt.strftime(r'%H:%M') # for now...
 		else:
-			if major_ticks >= 24:
+			if major_ticks >= 86400:
 				label = dt.strftime(r'%d %b')
 			else:
 				label = dt.strftime(r'%H:%M')
 		labels.append(label)
 		# now to add the sub-major ticks! These for now are automatic based on the current major ticks
 		if smj_ticks > 0.:
-			smjkey = time+smj_ticks*3600.
-			while smjkey < time + major_ticks*3600.:
+			smjkey = time+smj_ticks
+			while smjkey < time + major_ticks:
 				epochs.append(smjkey)
 				labels.append('') # append a blank label
-				smjkey += smj_ticks*3600.
+				smjkey += smj_ticks
 
-		time += major_ticks * 3600.
+		time += major_ticks
 	#now for minor ticks!
 	while time_minor <= end:
 		minis.append(time_minor)
-		time_minor += minor_ticks * 3600.
+		time_minor += minor_ticks
+		
 	customTick(ax,xy,epochs,labels,minis)
 
 # now to define ticks!!!
