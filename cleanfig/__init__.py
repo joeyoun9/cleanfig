@@ -64,10 +64,10 @@ sub_major_scale = {
    
 }
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
-def ttUTC(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=False,**kwargs):
-	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns,smt=smt,kwargs)
+def ttUTC(begin,end,ms=major_scale,mns=minor_scale,smt=False,ax=plt.gca(),xy='x',**kwargs):
+	timeticks(tz.utcTZ(),begin,end,days=True,major_scale=ms,minor_scale=mns,smt=smt,kwargs)
 
-def ttMST(ax,xy,begin,end,ms=major_scale,mns=minor_scale,smt=False,**kwargs):
+def ttMST(begin,end,ms=major_scale,mns=minor_scale,smt=False,ax=plt.gca(),xy='x',**kwargs):
 	timeticks(ax,xy,tz.mstTZ(),begin,end,major_scale=ms,minor_scale=mns,smt=smt,kwargs)
 
 
