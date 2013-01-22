@@ -132,7 +132,7 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 	# now time is the epoch time of the starting hour, 
 	# use the duration to determine how far between major/minor ticks should be
 	# define the epochs and labels lists using the major_ticks as the spacing
-	while time <= end:  ## Put ticks everywhere, including at the ends if they are good.
+	while time <= end+3600:  ## Put ticks everywhere, including at the ends if they are good.
 		#WRONG - if beginning plot!!# time should start at the first 0/3/6/9/etc - however, skip the first one if it is also the beginning
 		#if time == begin:
 		#	time += major_ticks * 3600
