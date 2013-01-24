@@ -70,7 +70,7 @@ def ttUTC(begin,end,**kwargs):
 def ttMST(begin,end,**kwargs):
 	tt(begin,end,tz.mstTZ(),**kwargs)
 
-def tt(begin,end,tzone,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,**kwargs):
+def tt(begin,end,userTZ,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,**kwargs):
 	'''
 	create time ticks
 	'''
@@ -125,8 +125,7 @@ def tt(begin,end,tzone,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates
 	if there is a whole hour within 1/3 of a dt range, then start there
 	'''
 	start=begin
-	'This should always use UTC, we will simply find the next UTC hour'
-	shift_st=datetime.fromtimestamp(begin + dt/3,tz=utcTZ())
+	shift_st=datetime.fromtimestamp(begin + dt/3,tz=userTZ)
 	if not shift_st.hour == st.hour:
 		'We have determined that within the first third of a bin, there is an hour change'
 		'shift this thing to the next full hour'
