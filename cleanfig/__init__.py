@@ -42,7 +42,7 @@ def ttUTC(begin,end=False,**kwargs):
 def ttMST(begin,end=False,**kwargs):
 	tt(begin,end,tz.mstTZ(),**kwargs)
 
-def tt(begin,end=False,userTZ=utcTZ(),ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,plt=False,**kwargs):
+def tt(begin,end=False,userTZ=tz.utcTZ(),ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,plt=False,**kwargs):
 	'''
 	create time ticks
 	'''
