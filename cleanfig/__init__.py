@@ -159,7 +159,7 @@ def tick(axis,interval,minor=False):
 		minor = tk.MultipleLocator(base=minor)
 		axis.set_minor_locator(minor)
 
-def no_tick(plt,xy='x'):
+def no_ticks(plt,xy='x'):
 	if xy=='x':
 		plt.gca().get_xaxis().set_ticks([])
 	else:
