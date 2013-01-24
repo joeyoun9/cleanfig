@@ -35,34 +35,6 @@ def init_axis_gs (plt,gs,twin=False,sharex=False):
 	else:
 		return ax
 
-# a new way to deal with times, simply use epoch times, and figure it out from there
-major_scale = {
-	0      	: .5,
-    6      	: 1,
-	12   	: 3,
-	48     	: 12,
-	300		: 24,
-	525     : 48
-	}
-# FIXME - at greater than 525 hours, there is no guarantee of encountering 12/0UTC
-minor_scale = {
-	0     	: (1./60.),
-	3     	: .5,
-	12     	: 1,
-	72     	: 3
-	}
-sub_major_scale = {
-	0.     	: 0,
-	0.5    	: 0,
-	1.0    	: (1./3.),
-	2.0    	:  1,
-	6.0    	:  3,
-	11.0   	:  6,
-    24.0   	:  6,
-	48		:  12,
-	118		:  24
-   
-}
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
 def ttUTC(begin,end,**kwargs):
 	tt(begin,end,tz.utcTZ(),**kwargs)
@@ -129,7 +101,8 @@ def tt(begin,end,userTZ,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodate
 	if not shift_st.hour == st.hour:
 		'We have determined that within the first third of a bin, there is an hour change'
 		'shift this thing to the next full hour'
-		start += (59-st.minute)*60+60-st.second
+		if st.minute>0:
+			start += (59-st.minute)*60+60-st.second
 		'THEN! if dt is > 9 hours, then find the nearest multiple of 3'
 		if dt > 9*3600:
 			shift_st= datetime.fromtimestamp(start,tz=userTZ)
