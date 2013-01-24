@@ -64,13 +64,115 @@ sub_major_scale = {
    
 }
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
-def ttUTC(begin,end,major=False,minor=False,smt=False,ax=plt.gca(),xy='x',**kwargs):
-	timeticks(ax,xy,tz.utcTZ(),begin,end,days=True,scale=major,minor_scale=minor,smt=smt,**kwargs)
+def ttUTC(begin,end,**kwargs):
+	tt(begin,end,tz.utcTZ(),**kwargs)
 
-def ttMST(begin,end,major=False,minor=False,smt=False,ax=plt.gca(),xy='x',**kwargs):
-	timeticks(ax,xy,tz.mstTZ(),begin,end,scale=major,minor_scale=minor,smt=smt,**kwargs)
+def ttMST(begin,end,**kwargs):
+	tt(begin,end,tz.mstTZ(),**kwargs)
+
+def tt(begin,end,tzone,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,**kwargs):
+	'''
+	create time ticks
+	'''
+	'determine the gaps'
+	duration = float(end-begin)
+	dt = duration/(major_count-1.)
+	'So, figure out where this is closest to'
+	
+	def alg(dt):
+		'a simple algorithm to determine how much to add'
+		if dt < 3*3600:
+			'1,2,3'
+			return 3600
+		elif dt < 18*3600:
+			'6,9,12,15,18'
+			return 3*3600
+		elif dt < 36*3600:
+			'24,30,36'
+			return 6*3600
+		else: 
+			return 12*3600
+			'48,60,72,84,96,...'
+			
+	if dt < 3600:
+		'''
+		if to make major_count-1 segments is less than an hour, then simply
+		make major_count segments.
+		'''
+		dt = duration/major_count
+	else:
+		count = 100.
+		dt = 3600 
+		while count > major_count:
+			dt+=alg(dt)
+			count = duration/dt
+	'Not perfect, but it will do for now...'
+	minor_dt = dt/minor_count
+	'''
+	I could add more logic to this computation, but I cannot figure out a good
+	way to actually make anything better.
+	'''	
+	
+	'now find the ticks'
+	'determine if the date should be shown or not'
+	st = datetime.fromtimestamp(begin,tz=userTZ)
+	en = datetime.fromtimestamp(end,tz=userTZ)
+	incl_dates = False
+	if duration>86400 or not  st.day == en.day: incl_dates=True
+	
+	'''
+	Determine tick beginning time. The logic here will be that
+	if there is a whole hour within 1/3 of a dt range, then start there
+	'''
+	start=begin
+	'This should always use UTC, we will simply find the next UTC hour'
+	shift_st=datetime.fromtimestamp(begin + dt/3,tz=utcTZ())
+	if not shift_st.hour == st.hour:
+		'We have determined that within the first third of a bin, there is an hour change'
+		'shift this thing to the next full hour'
+		start += (59-st.minute)*60+60-st.second
+		'THEN! if dt is > 9 hours, then find the nearest multiple of 3'
+		if dt > 9*3600:
+			shift_st= datetime.fromtimestamp(start,tz=userTZ)
+			while not shift_st.hour % 3 == 0:
+				start += 3600
+				shift_st= datetime.fromtimestamp(start,tz=userTZ)
+
+		
+	t = start
+	times = []
+	texts = []
+	
+	'make major ticks'
+	while t<= end:
+		times.append(t)
+		'''
+		logic for dates
+		if there is more than one day in the period, then include the date
+		'''
+		dtobj = datetime.fromtimestamp(t,tz=userTZ)
+		t+=dt
+		if incl_dates and not nodates:
+			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
+		else:
+			texts.append(dtobj.strftime('%H:%M'))
+
+	
+	'make minor ticks'
+	t = start-dt
+	minor_times = []
+	while t<end+dt:
+		minor_times.append(t)
+		t+=minor_dt
+	'and draw the actual ticks'
+	customTick(ax,xy,times,texts,minor=minor_times)
+	if xy == 'x':
+		ax.set_xlim((begin,end))
+		ax.set_xlabel('Time ('+userTZ.tzname(False)+')')
+	
 
 
+'''
 def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt=True,**kwargs):
 	"""
 		 
@@ -105,7 +207,7 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 	if minor_scale:
 		minor_ticks = minor_scale
 	else:
-		minor_ticks = major_ticks/10
+		minor_ticks = major_ticks/10.
 
 	'''
 	# begin is epoch time value, find the next occuring 0, 3, 6, 9, 12, 15, 18 or 21 hour
@@ -126,13 +228,13 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 			time_minor += 3600.
 	'''
 	
-	'MAKE SURE TIME MINOR AND TIME BEGIN AT THE SAME TIME'
+	'MAKE SURE TIME MINOR AND TIME BEGIN AT THE SAME TIME, lest they become offset '
 	time = begin
 	time_minor = begin
 	# now time is the epoch time of the starting hour, 
 	# use the duration to determine how far between major/minor ticks should be
 	# define the epochs and labels lists using the major_ticks as the spacing
-	while time <= end+5:  ## Put ticks everywhere, including at the ends if they are good.
+	while time <= end+1:  ## Put ticks everywhere, including at the ends if they are good.
 		#WRONG - if beginning plot!!# time should start at the first 0/3/6/9/etc - however, skip the first one if it is also the beginning
 		#if time == begin:
 		#	time += major_ticks * 3600
@@ -172,6 +274,7 @@ def timeticks(ax,xy,tzone,begin,end,days=False,scale=False,minor_scale=False,smt
 	customTick(ax,xy,epochs,labels,minis)
 
 # now to define ticks!!!
+'''
 def tick(axis,interval,minor=False):
 	fmt = tk.FormatStrFormatter('%i')
 	loc = tk.MultipleLocator(base=interval)
