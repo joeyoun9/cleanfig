@@ -36,16 +36,20 @@ def init_axis_gs (plt,gs,twin=False,sharex=False):
 		return ax
 
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
-def ttUTC(begin,end,**kwargs):
+def ttUTC(begin,end=False,**kwargs):
 	tt(begin,end,tz.utcTZ(),**kwargs)
 
-def ttMST(begin,end,**kwargs):
+def ttMST(begin,end=False,**kwargs):
 	tt(begin,end,tz.mstTZ(),**kwargs)
 
-def tt(begin,end,userTZ,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,**kwargs):
+def tt(begin,end=False,userTZ=utcTZ(),ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodates=False,plt=False,**kwargs):
 	'''
 	create time ticks
 	'''
+	if not end:
+		'we can accept simply a list of times, and take the first and last values'
+		end = begin[-1]
+		begin = begin[0]
 	'determine the gaps'
 	duration = float(end-begin)
 	dt = duration/(major_count-1.)
@@ -128,8 +132,7 @@ def tt(begin,end,userTZ,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodate
 			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
 		else:
 			texts.append(dtobj.strftime('%H:%M'))
-
-	
+			
 	'make minor ticks'
 	t = start-dt
 	minor_times = []
@@ -137,6 +140,9 @@ def tt(begin,end,userTZ,ax=plt.gca(),xy='x',major_count=5.,minor_count=6.,nodate
 		minor_times.append(t)
 		t+=minor_dt
 	'and draw the actual ticks'
+	if plt:
+		'if a plt key is passed, then that supercedes the ax key passed.'
+		ax = plt.gca()
 	customTick(ax,xy,times,texts,minor=minor_times)
 	if xy == 'x':
 		ax.set_xlim((begin,end))
@@ -153,7 +159,12 @@ def tick(axis,interval,minor=False):
 		minor = tk.MultipleLocator(base=minor)
 		axis.set_minor_locator(minor)
 
-
+def no_tick(plt,xy='x'):
+	if xy=='x':
+		plt.gca().get_xaxis().set_ticks([])
+	else:
+		plt.gca().get_yaxis().set_ticks([])
+	'NOTE, this may not remove labels...'
 
 def customTick(ax,xy, vals, labels, minor=False):
 	if xy == 'x':
