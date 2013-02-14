@@ -131,6 +131,7 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
 		else:
 			texts.append(dtobj.strftime('%H:%M'))
+
 	'make minor ticks'
 	t = start - dt
 	minor_times = []
@@ -142,8 +143,9 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 		'if a plt key is passed, then that supercedes the ax key passed.'
 		ax = plt.gca()
 	customTick(ax, xy, times, texts, minor=minor_times)
+
 	if xy == 'x':
-		ax.set_xlim((begin - 3, end + 15))
+		ax.set_xlim((begin - 3, max(times)))
 		ax.set_xlabel('Time (' + userTZ.tzname(False) + ')')
 
 
