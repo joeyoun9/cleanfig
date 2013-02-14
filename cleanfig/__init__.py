@@ -41,7 +41,9 @@ def ttUTC(begin, end=False, **kwargs):
 def ttMST(begin, end=False, **kwargs):
 	tt(begin, end, tz.mstTZ(), **kwargs)
 
-def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5., minor_count=6., nodates=False, plt=False, **kwargs):
+def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
+	major_count=5., minor_count=6., nodates=False, plt=False, notext=False,
+	**kwargs):
 	'''
 	create time ticks
 	'''
@@ -127,10 +129,13 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 		'''
 		dtobj = datetime.fromtimestamp(t, tz=userTZ)
 		t += dt
-		if incl_dates and not nodates:
+		if not notext and incl_dates and not nodates:
 			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
-		else:
+		elif not notext:
 			texts.append(dtobj.strftime('%H:%M'))
+		else:
+			# notext has been selected
+			texts.append('')
 
 	'make minor ticks'
 	t = start - dt
