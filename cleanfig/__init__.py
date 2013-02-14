@@ -131,7 +131,6 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
 		else:
 			texts.append(dtobj.strftime('%H:%M'))
-	print 'This many time ticks were made: ', len(times)
 	'make minor ticks'
 	t = start - dt
 	minor_times = []
@@ -144,7 +143,7 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 		ax = plt.gca()
 	customTick(ax, xy, times, texts, minor=minor_times)
 	if xy == 'x':
-		ax.set_xlim((begin, end))
+		ax.set_xlim((begin - 1, end + 1))
 		ax.set_xlabel('Time (' + userTZ.tzname(False) + ')')
 
 
