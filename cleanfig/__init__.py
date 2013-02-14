@@ -119,7 +119,7 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 	texts = []
 
 	'make major ticks'
-	while t <= end:
+	while t <= end + dt:
 		times.append(t)
 		'''
 		logic for dates
