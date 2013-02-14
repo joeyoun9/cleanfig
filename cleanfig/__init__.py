@@ -145,7 +145,9 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x', major_count=5.
 	customTick(ax, xy, times, texts, minor=minor_times)
 
 	if xy == 'x':
-		ax.set_xlim((begin - 3, max(times)))
+		if max(times) > end:
+			end = max(times)
+		ax.set_xlim((begin - 1, end + 1))
 		ax.set_xlabel('Time (' + userTZ.tzname(False) + ')')
 
 
