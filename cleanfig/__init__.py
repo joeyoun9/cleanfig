@@ -43,7 +43,7 @@ def ttMST(begin, end=False, **kwargs):
 
 def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
 	major_count=5., minor_count=6., nodates=False, plt=False, notext=False,
-	**kwargs):
+	label=False, **kwargs):
 	'''
 	create time ticks
 	'''
@@ -150,10 +150,22 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
 	customTick(ax, xy, times, texts, minor=minor_times)
 
 	if xy == 'x':
+		# some special things can be done when this is on the x axis
+		# note, none of this is special to the x-x=axis
 		if max(times) > end:
 			end = max(times)
+		# set the limit so the last tick actually gets plotted.
 		ax.set_xlim((begin - 1, end + 1))
-		ax.set_xlabel('Time (' + userTZ.tzname(False) + ')')
+
+		# if text is being made, then apply the label to the axis
+		if not notext:
+			axis_label = 'Time (' + userTZ.tzname(False) + ')'
+			if not incl_dates:
+				# then no dates are shown because there is only one date in the fig
+				axis_label += ' on ' + st.strftime('%d %b %Y')
+			if label:
+				axis_label += ' ' + label
+			ax.set_xlabel(axis_label)
 
 
 def tick(axis, interval, minor=False):
