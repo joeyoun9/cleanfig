@@ -7,6 +7,9 @@ from matplotlib import rc, rcParams
 import math
 from datetime import tzinfo, timedelta, date, datetime
 from . import timezones as tz
+import logging
+
+#TODO: get rid of rogue docstrings!!!
 
 def epoch2mplDate(ep):
 	return md.epoch2num(ep)
