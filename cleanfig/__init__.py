@@ -6,7 +6,7 @@ from mpl_toolkits.axes_grid1 import host_subplot
 from matplotlib import rc, rcParams
 import math
 from datetime import tzinfo, timedelta, date, datetime
-from . import timezones as tz
+import timezones as tz
 import logging
 
 #TODO: get rid of rogue docstrings!!!
@@ -105,8 +105,9 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
 	if there is a whole hour within 1/3 of a dt range, then start there
 	'''
 	start = begin
+
 	shift_st = datetime.fromtimestamp(begin + dt / 3, tz=userTZ)
-	if not shift_st.hour == st.hour:
+	if not shift_st.hour == st.hour or not (st.minute == 0 and st.hour % 3 == 0):
 		'We have determined that within the first third of a bin, there is an hour change'
 		'shift this thing to the next full hour'
 		if st.minute > 0:
