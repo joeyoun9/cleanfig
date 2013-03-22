@@ -107,7 +107,7 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
 	start = begin
 
 	shift_st = datetime.fromtimestamp(begin + dt / 3, tz=userTZ)
-	if not shift_st.hour == st.hour or not (st.minute == 0 and st.hour % 3 == 0):
+	if not shift_st.hour == st.hour and not (st.minute == 0 and st.hour % 3 == 0):
 		'We have determined that within the first third of a bin, there is an hour change'
 		'shift this thing to the next full hour'
 		if st.minute > 0:
