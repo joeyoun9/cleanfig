@@ -7,7 +7,7 @@ from matplotlib import rc, rcParams
 import math
 from datetime import tzinfo, timedelta, date, datetime
 import timezones as tz
-import logging
+import logging as l
 
 #TODO: get rid of rogue docstrings!!!
 
