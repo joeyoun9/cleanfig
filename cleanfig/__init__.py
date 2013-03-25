@@ -113,8 +113,8 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
 		'shift this thing to the next full hour'
 		if st.minute > 0:
 			start += (59 - st.minute) * 60 + 60 - st.second
-		'THEN! if dt is > 9 hours, then find the nearest multiple of 3'
-		if dt > 9 * 3600:
+		'THEN! if dt is > 4 hours, then find the nearest multiple of 3'
+		if dt > 4 * 3600:
 			shift_st = datetime.fromtimestamp(start, tz=userTZ)
 			while not shift_st.hour % 3 == 0:
 				start += 3600
