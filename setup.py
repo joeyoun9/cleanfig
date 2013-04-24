@@ -8,6 +8,6 @@ setup(name='cleanfig',
       author='Joe Young',
       author_email='joe.young@utah.edu',
       url='http://www.jsyoung.us/code/',
-      packages=['cleanfig'],
+      packages=['cleanfig','cleanfig.timezones'],
      )
 
