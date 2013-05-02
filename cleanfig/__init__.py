@@ -1,5 +1,5 @@
-#import matplotlib.dates as md
-#import matplotlib.ticker as tk
+# import matplotlib.dates as md
+# import matplotlib.ticker as tk
 import mpl_toolkits.axisartist as AA
 from mpl_toolkits.axes_grid1 import host_subplot
 
@@ -60,6 +60,7 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	if not ax and not plt:
 		l.warning('tt: No axis instance (ax) or plt specified!')
 		return False
+
 	def alg(dt):
 		'a simple algorithm to determine how much to add'
 		if dt < 3 * 3600:
