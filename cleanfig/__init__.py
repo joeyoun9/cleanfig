@@ -3,7 +3,7 @@ import matplotlib.dates as md
 import matplotlib.ticker as tk
 import mpl_toolkits.axisartist as AA
 from mpl_toolkits.axes_grid1 import host_subplot
-from matplotlib import rc, rcParams
+
 import math
 from datetime import tzinfo, timedelta, date, datetime
 import timezones as tz
@@ -14,9 +14,9 @@ import logging as l
 def epoch2mplDate(ep):
 	return md.epoch2num(ep)
 
-def figure():
-	rc('font', **{'family':'sans-serif', 'sans-serif':['Helvetica']})
-	rc('text', usetex=True)
+def makefig():
+	# rc('font', **{'family':'sans-serif', 'sans-serif':['Helvetica']})
+	# rc('text', usetex=True)
 	return plt.figure()
 
 def init_axis(rows, cols, i, twin=False):
@@ -27,7 +27,7 @@ def init_axis(rows, cols, i, twin=False):
 		return ax, ax.twin()
 	else:
 		return ax
-def init_axis_gs (plt, gs, twin=False, sharex=False):
+def init_axis_gs (gs, twin=False, sharex=False):
 	if not sharex:
 		ax = host_subplot(gs, axes_class=AA.Axes)
 	else:
@@ -44,7 +44,7 @@ def ttUTC(begin, end=False, **kwargs):
 def ttMST(begin, end=False, **kwargs):
 	tt(begin, end, tz.mstTZ(), **kwargs)
 
-def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
+def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	major_count=5., minor_count=6., nodates=False, plt=False, notext=False,
 	label=False, **kwargs):
 	'''
@@ -58,7 +58,9 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=plt.gca(), xy='x',
 	duration = float(end - begin)
 	dt = duration / (major_count - 1.)
 	'So, figure out where this is closest to'
-
+	if not ax and not plt:
+		l.warning('ttMST: No axis instance (ax) or plt specified!')
+		return False
 	def alg(dt):
 		'a simple algorithm to determine how much to add'
 		if dt < 3 * 3600:
@@ -215,7 +217,7 @@ def colbar_ceilometer(fig, data):
 		'orientation':'horizontal',
 		'fraction':0.04,
 		'pad':0.1,
-		'format':tk.FormatStrFormatter(r"%1.1f\linebreak$\displaystyle m^{-1}sr^{-1}$"),
+		'format':tk.FormatStrFormatter(r"%1.1f\linebreak$\displaystyle m^{-1}$sr^{-1}$"),
 		'aspect':40,
 		'drawedges':False
 	})
