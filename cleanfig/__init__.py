@@ -59,7 +59,7 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	dt = duration / (major_count - 1.)
 	'So, figure out where this is closest to'
 	if not ax and not plt:
-		l.warning('ttMST: No axis instance (ax) or plt specified!')
+		l.warning('tt: No axis instance (ax) or plt specified!')
 		return False
 	def alg(dt):
 		'a simple algorithm to determine how much to add'
