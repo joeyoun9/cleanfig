@@ -72,7 +72,7 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		elif dt < 36 * 3600:
 			'24,30,36'
 			return 6 * 3600
-		elif dt < 300 * 3600:
+		elif dt < 192 * 3600:
 			return 12 * 3600
 			'48,60,72,84,96,...'
 		else:
@@ -87,7 +87,7 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		dt = duration / major_count
 	else:
 		count = 100.
-		dt = 3600
+		dt = 0  # lets the functions act more purely?
 		while count > major_count:
 			dt += alg(dt)
 			count = duration / dt
@@ -110,13 +110,13 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	Determine tick beginning time. The logic here will be that
 	if there is a whole hour within 1/3 of a dt range, then start there
 	
-	if dt > 300 hours, then we are looking for a 00 hour
+	if dt > 192 hours, then we are looking for a 00 hour
 	'''
 	start = begin
 
 	shift_st = datetime.fromtimestamp(begin + dt / 3, tz=userTZ)
 	# if the hour is a multiple of 3, and minute 0, then skip this
-	if dt > 300 * 3600:
+	if dt > 192 * 3600:
 		# do the >24 hour business
 		l.debug('tt: computing integer date timestamps')
 		# fix minutes
@@ -126,8 +126,9 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		st = datetime.fromtimestamp(start, tz=userTZ)
 		# now just shift to the next time the hour is 0
 		while st.hour > 0:
-			start += 3600
+			start += 3600.
 			st = datetime.fromtimestamp(start, tz=userTZ)
+		incl_times = False
 	elif not shift_st.hour == st.hour and not (st.minute == 0 and st.hour % 3 == 0):
 		l.debug('computing start time shift, data: ' + str(st.hour) + ' m: ' + str(st.minute))
 		# 'We have determined that within the first third of a bin, there is an hour change'
