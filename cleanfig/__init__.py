@@ -79,7 +79,7 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 			return 24 * 3600
 			'some range of integer days'
 
-	if dt < 3600:
+	if native_dt < 3600:
 		'''
 		if to make major_count-1 segments is less than an hour, then simply
 		make major_count segments.
