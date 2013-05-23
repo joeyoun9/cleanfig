@@ -38,12 +38,12 @@ def init_axis_gs (gs, twin=False, sharex=False):
 
 """ the tt functions allow you to call a tiemzone specific function, without having to import tzinfo"""
 def ttUTC(begin, end=False, **kwargs):
-	tt(begin, end, tz.utcTZ(), **kwargs)
+	_tt(begin, end, tz.utcTZ(), **kwargs)
 
 def ttMST(begin, end=False, **kwargs):
-	tt(begin, end, tz.mstTZ(), **kwargs)
+	_tt(begin, end, tz.mstTZ(), **kwargs)
 
-def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
+def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	major_count=5., minor_count=6., nodates=False, plt=False, notext=False,
 	label=False, **kwargs):
 	'''
@@ -72,9 +72,12 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		elif dt < 36 * 3600:
 			'24,30,36'
 			return 6 * 3600
-		else:
+		elif dt < 300 * 3600:
 			return 12 * 3600
 			'48,60,72,84,96,...'
+		else:
+			return 24 * 3600
+			'some range of integer days'
 
 	if dt < 3600:
 		'''
@@ -100,22 +103,38 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	st = datetime.fromtimestamp(begin, tz=userTZ)
 	en = datetime.fromtimestamp(end, tz=userTZ)
 	incl_dates = False
+	incl_times = True
 	if duration > 86400 or not  st.day == en.day: incl_dates = True
 
 	'''
 	Determine tick beginning time. The logic here will be that
 	if there is a whole hour within 1/3 of a dt range, then start there
+	
+	if dt > 300 hours, then we are looking for a 00 hour
 	'''
 	start = begin
 
 	shift_st = datetime.fromtimestamp(begin + dt / 3, tz=userTZ)
-	if not shift_st.hour == st.hour and not (st.minute == 0 and st.hour % 3 == 0):
-		l.debug('computing start time shift, data: ' + str(st.hour) + ' m: ' + str(st.minute))
-		'We have determined that within the first third of a bin, there is an hour change'
-		'shift this thing to the next full hour'
+	# if the hour is a multiple of 3, and minute 0, then skip this
+	if dt > 300 * 3600:
+		# do the >24 hour business
+		l.debug('tt: computing integer date timestamps')
+		# fix minutes
 		if st.minute > 0:
 			start += (59 - st.minute) * 60 + 60 - st.second
-		'THEN! if dt is > 4 hours, then find the nearest multiple of 3'
+		# recompute the start time object
+		st = datetime.fromtimestamp(start, tz=userTZ)
+		# now just shift to the next time the hour is 0
+		while st.hour > 0:
+			start += 3600
+			st = datetime.fromtimestamp(start, tz=userTZ)
+	elif not shift_st.hour == st.hour and not (st.minute == 0 and st.hour % 3 == 0):
+		l.debug('computing start time shift, data: ' + str(st.hour) + ' m: ' + str(st.minute))
+		# 'We have determined that within the first third of a bin, there is an hour change'
+		# 'shift this thing to the next full hour'
+		if st.minute > 0:
+			start += (59 - st.minute) * 60 + 60 - st.second
+		# 'THEN! if dt is > 4 hours, then find the nearest multiple of 3'
 		if dt > 4 * 3600:
 			shift_st = datetime.fromtimestamp(start, tz=userTZ)
 			while not shift_st.hour % 3 == 0:
@@ -127,7 +146,10 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	times = []
 	texts = []
 
-	'make major ticks'
+	# make major ticks
+	if nodates:
+		# catch the nodates correction
+		incl_dates = False
 	while t <= end + dt:
 		times.append(t)
 		'''
@@ -136,15 +158,17 @@ def tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		'''
 		dtobj = datetime.fromtimestamp(t, tz=userTZ)
 		t += dt
-		if not notext and incl_dates and not nodates:
+		if not notext and incl_dates and incl_times:
 			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
-		elif not notext:
+		elif not notext and incl_times:
 			texts.append(dtobj.strftime('%H:%M'))
+		elif not notext and incl_dates:
+			texts.append(dtobj.strftime('%d %b %Y'))
 		else:
 			# notext has been selected
 			texts.append('')
 
-	'make minor ticks'
+	# 'make minor ticks'
 	t = start - dt
 	minor_times = []
 	while t < end + dt:
