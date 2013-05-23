@@ -55,14 +55,14 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		begin = begin[0]
 	'determine the gaps'
 	duration = float(end - begin)
-	dt = duration / (major_count - 1.)
+	native_dt = duration / (major_count - 1.)
 	'So, figure out where this is closest to'
 	if not ax and not plt:
 		l.warning('tt: No axis instance (ax) or plt specified!')
 		return False
 
 	def alg(dt):
-		'a simple algorithm to determine how much to add'
+		# the dt is a multiple of this many hours, an algoritm
 		if dt < 3 * 3600:
 			'1,2,3'
 			return 3600
@@ -89,7 +89,7 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		count = 100.
 		dt = 0  # lets the functions act more purely?
 		while count > major_count:
-			dt += alg(dt)
+			dt += alg(native_dt)
 			count = duration / dt
 	'Not perfect, but it will do for now...'
 	minor_dt = dt / minor_count
@@ -153,21 +153,18 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		incl_dates = False
 	while t <= end + dt:
 		times.append(t)
-		'''
-		logic for dates
-		if there is more than one day in the period, then include the date
-		'''
+		# determine the relevant text
 		dtobj = datetime.fromtimestamp(t, tz=userTZ)
 		t += dt
-		if not notext and incl_dates and incl_times:
-			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
-		elif not notext and incl_times:
-			texts.append(dtobj.strftime('%H:%M'))
-		elif not notext and incl_dates:
-			texts.append(dtobj.strftime('%d %b %Y'))
-		else:
-			# notext has been selected
+		if notext:
 			texts.append('')
+		elif incl_dates and incl_times:
+			texts.append(dtobj.strftime('%H:%M\n%d %b %Y'))
+		elif incl_times:
+			texts.append(dtobj.strftime('%H:%M'))
+		else:
+			texts.append(dtobj.strftime('%d %b %Y'))
+
 
 	# 'make minor ticks'
 	t = start - dt
