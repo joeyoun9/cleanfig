@@ -92,7 +92,14 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 			dt += alg(native_dt)
 			count = duration / dt
 	'Not perfect, but it will do for now...'
-	minor_dt = dt / minor_count
+	if dt % (24*6) == 0:
+		# then we are working with dt > 6 days:
+		# find the minor_dt which gives minor_count or one more integer days
+		#days = dt / 24 # number of days per major tick
+		
+		minor_dt = 24*3600 # for now. #FIXME - BANDAID SOLUTION!
+	else:
+		minor_dt = dt / minor_count
 	'''
 	I could add more logic to this computation, but I cannot figure out a good
 	way to actually make anything better.
