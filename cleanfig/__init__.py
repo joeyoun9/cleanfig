@@ -1,5 +1,3 @@
-# import matplotlib.dates as md
-# import matplotlib.ticker as tk
 import mpl_toolkits.axisartist as AA
 from mpl_toolkits.axes_grid1 import host_subplot
 
@@ -8,15 +6,7 @@ from datetime import tzinfo, timedelta, date, datetime
 import timezones as tz
 import logging as l
 
-#TODO: get rid of rogue docstrings!!!
-
-def epoch2mplDate(ep):
-	return md.epoch2num(ep)
-
-def makefig():
-	# rc('font', **{'family':'sans-serif', 'sans-serif':['Helvetica']})
-	# rc('text', usetex=True)
-	return plt.figure()
+#TODO: get rid of rogue docstrings!!! and maybe add good ones?
 
 def init_axis(rows, cols, i, twin=False):
 	# this creates axes with the axes artist loaded
@@ -45,7 +35,7 @@ def ttMST(begin, end=False, **kwargs):
 
 def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 	major_count=5., minor_count=6., nodates=False, plt=False, notext=False,
-	label=False, **kwargs):
+	label=False, focus_hour=12, **kwargs):
 	'''
 	create time ticks
 	'''
@@ -132,7 +122,11 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		# recompute the start time object
 		st = datetime.fromtimestamp(start, tz=userTZ)
 		# now just shift to the next time the hour is 0
-		while st.hour > 0:
+		# focus_hour is 12 by default, picking midday to indicate. 
+		# but it might be more properly 12.
+		if not focus_hour:
+			focus_hour=0
+		while not st.hour == focus_hour:
 			start += 3600.
 			st = datetime.fromtimestamp(start, tz=userTZ)
 		incl_times = False
@@ -205,6 +199,8 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 
 
 def tick(axis, interval, minor=False):
+	# perform a dirty import of the tick library
+	import matplotlib.ticker as tk
 	fmt = tk.FormatStrFormatter('%i')
 	loc = tk.MultipleLocator(base=interval)
 	# now set!
@@ -246,7 +242,7 @@ def colbar_ceilometer(fig, data):
 		'orientation':'horizontal',
 		'fraction':0.04,
 		'pad':0.1,
-		'format':tk.FormatStrFormatter(r"%1.1f\linebreak$\displaystyle m^{-1}$sr^{-1}$"),
+		#'format':tk.FormatStrFormatter(r"%1.1f\linebreak$\displaystyle m^{-1}$sr^{-1}$"),
 		'aspect':40,
 		'drawedges':False
 	})
