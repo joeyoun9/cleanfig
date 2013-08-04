@@ -5,6 +5,7 @@ import math
 from datetime import tzinfo, timedelta, date, datetime
 import timezones as tz
 import logging as l
+from numpy import min, max
 
 # TODO: get rid of rogue docstrings!!! and maybe add good ones?
 
@@ -262,8 +263,8 @@ def tick_labels(list, userTZ=tz.mstTZ(), nodates='auto', notimes='auto'):
 	nodates  specifies if the date will be in the text (default is auto, if a day changes, then yes)
 	notimes specifies if the time should not be shown, (default is auto, always show time)
 	'''
-	lx = np.max(list)
-	ln = np.min(list)
+	lx = max(list)
+	ln = min(list)
 	dt = lx - ln
 	st = datetime.fromtimestamp(ln, tz=userTZ)
 	en = datetime.fromtimestamp(lx, tz=userTZ)
