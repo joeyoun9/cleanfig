@@ -6,7 +6,7 @@ from datetime import tzinfo, timedelta, date, datetime
 import timezones as tz
 import logging as l
 
-#TODO: get rid of rogue docstrings!!! and maybe add good ones?
+# TODO: get rid of rogue docstrings!!! and maybe add good ones?
 
 def init_axis(rows, cols, i, twin=False):
 	# this creates axes with the axes artist loaded
@@ -82,12 +82,12 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 			dt += alg(native_dt)
 			count = duration / dt
 	'Not perfect, but it will do for now...'
-	if dt % (24*6) == 0:
+	if dt % (24 * 6) == 0:
 		# then we are working with dt > 6 days:
 		# find the minor_dt which gives minor_count or one more integer days
-		#days = dt / 24 # number of days per major tick
-		
-		minor_dt = 24*3600 # for now. #FIXME - BANDAID SOLUTION!
+		# days = dt / 24 # number of days per major tick
+
+		minor_dt = 24 * 3600  # for now. #FIXME - BANDAID SOLUTION!
 	else:
 		minor_dt = dt / minor_count
 	'''
@@ -122,10 +122,10 @@ def _tt(begin, end=False, userTZ=tz.utcTZ(), ax=None, xy='x',
 		# recompute the start time object
 		st = datetime.fromtimestamp(start, tz=userTZ)
 		# now just shift to the next time the hour is 0
-		# focus_hour is 12 by default, picking midday to indicate. 
+		# focus_hour is 12 by default, picking midday to indicate.
 		# but it might be more properly 12.
 		if not focus_hour:
-			focus_hour=0
+			focus_hour = 0
 		while not st.hour == focus_hour:
 			start += 3600.
 			st = datetime.fromtimestamp(start, tz=userTZ)
@@ -242,7 +242,7 @@ def colbar_ceilometer(fig, data):
 		'orientation':'horizontal',
 		'fraction':0.04,
 		'pad':0.1,
-		#'format':tk.FormatStrFormatter(r"%1.1f\linebreak$\displaystyle m^{-1}$sr^{-1}$"),
+		# 'format':tk.FormatStrFormatter(r"%1.1f\linebreak$\displaystyle m^{-1}$sr^{-1}$"),
 		'aspect':40,
 		'drawedges':False
 	})
@@ -252,4 +252,41 @@ def fig_size(fig, x, y):
 
 def ep2num(num):
 	return num
+
+def tick_labels(list, userTZ=tz.mstTZ(), nodates='auto', notimes='auto'):
+	'''
+	Return a list of labels for a given list of times, following our rules above.
+	
+	a utility for when the algorithms used previously are not sufficient
+	list, is the list of times
+	nodates  specifies if the date will be in the text (default is auto, if a day changes, then yes)
+	notimes specifies if the time should not be shown, (default is auto, always show time)
+	'''
+	lx = np.max(list)
+	ln = np.min(list)
+	dt = lx - ln
+	st = datetime.fromtimestamp(ln, tz=userTZ)
+	en = datetime.fromtimestamp(lx, tz=userTZ)
+	if nodates == 'auto':
+		if dt > 86400 or not  st.day == en.day:
+			# show dates!
+			nodates = False
+		else:
+			nodates = True
+	if notimes == 'auto':
+		notimes = False
+
+	out = []
+	if nodates and notimes:
+		return out * len(list)
+	i = 0
+	for t in list:
+
+		dtobj = datetime.fromtimestamp(t, tz=userTZ)
+		if not nodates and not notimes:
+			out.append(dtobj.strftime('%H:%M\n%d %b %Y'))
+		elif nodates:
+			out.append(dtobj.strftime('%H:%M'))
+		else:
+			out.append(dtobj.strftime('%d %b %Y'))
 
