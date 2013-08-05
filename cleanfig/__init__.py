@@ -290,4 +290,4 @@ def tick_labels(list, userTZ=tz.mstTZ(), nodates='auto', notimes='auto'):
 			out.append(dtobj.strftime('%H:%M'))
 		else:
 			out.append(dtobj.strftime('%d %b %Y'))
-
+	return out
